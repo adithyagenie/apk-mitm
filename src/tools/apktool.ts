@@ -1,4 +1,4 @@
-import { map } from 'rxjs/operators'
+import { map } from 'rxjs/operators/index.js'
 import chalk from 'chalk'
 
 import { executeJar } from '../utils/execute-jar.js'
