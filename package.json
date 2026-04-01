@@ -19,9 +19,10 @@
     "test": "tsc",
     "watch": "tsc --watch",
     "format": "prettier --write .",
-    "lint": "prettier --check ."
+    "lint": "prettier --check .",
+    "prepack": "pnpm build"
   },
-  "bin": "bin/apk-mitm",
+  "bin": "dist/cli.js",
   "files": [
     "bin",
     "dist"
