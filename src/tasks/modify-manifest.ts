@@ -1,5 +1,5 @@
-import * as fs from '../utils/fs'
-import xml = require('xml-js')
+import * as fs from '../utils/fs.js'
+import xml from 'xml-js'
 
 export default async function modifyManifest(
   path: string,

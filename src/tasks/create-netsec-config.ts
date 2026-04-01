@@ -1,4 +1,4 @@
-import * as fs from '../utils/fs'
+import * as fs from '../utils/fs.js'
 import * as pathUtils from 'path'
 
 /** Generates the XML contents of the Network Security File. */

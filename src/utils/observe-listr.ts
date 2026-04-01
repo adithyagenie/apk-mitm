@@ -1,6 +1,6 @@
-import chalk = require('chalk')
-import Listr = require('listr')
-import { Observable, Subscriber } from 'rxjs'
+import chalk from 'chalk'
+import Listr from 'listr'
+import { Observable, type Subscriber } from 'rxjs'
 
 /**
  * Takes in a `Listr` instance, runs it, and reports on its progress through the
@@ -42,7 +42,7 @@ class ObservableRenderer implements Listr.ListrRenderer {
         if (event.type === 'STATE') {
           if (task.isPending()) {
             const progress = `${index + 1}/${this.tasks.length}`
-            const message = chalk`{dim [${progress}]} ${task.title}`
+            const message = `${chalk.dim(`[${progress}]`)} ${task.title}`
 
             return this.subscriber.next(message)
           } else if (task.isSkipped()) {

@@ -1,5 +1,5 @@
-import execa = require('execa')
-import UserError from './user-error'
+import { execa } from 'execa'
+import UserError from './user-error.js'
 
 /** Returns the major version of the system's default Java installation. */
 export default async function getJavaVersion() {
@@ -12,7 +12,7 @@ export default async function getJavaVersion() {
     }
 
     return parseInt(majorVersionString)
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'ENOENT')
       throw new UserError(
         'No "java" executable could be found!' +

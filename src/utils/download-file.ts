@@ -1,6 +1,6 @@
-import * as fs from './fs'
+import * as fs from './fs.js'
 import { Observable } from 'rxjs'
-import followRedirects = require('follow-redirects')
+import followRedirects from 'follow-redirects'
 const { https } = followRedirects
 
 export default function downloadFile(url: string, path: string) {

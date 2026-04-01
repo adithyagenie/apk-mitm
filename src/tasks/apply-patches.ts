@@ -1,10 +1,10 @@
 import * as path from 'path'
-import Listr = require('listr')
+import Listr from 'listr'
 
-import modifyManifest from './modify-manifest'
-import createNetworkSecurityConfig from './create-netsec-config'
-import disableCertificatePinning from './disable-certificate-pinning'
-import copyCertificateFile from './copy-certificate-file'
+import modifyManifest from './modify-manifest.js'
+import createNetworkSecurityConfig from './create-netsec-config.js'
+import disableCertificatePinning from './disable-certificate-pinning.js'
+import copyCertificateFile from './copy-certificate-file.js'
 
 export default function applyPatches(
   decodeDir: string,

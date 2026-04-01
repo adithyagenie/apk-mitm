@@ -1,11 +1,11 @@
-import * as fs from '../utils/fs'
+import * as fs from '../utils/fs.js'
 import * as pathUtils from 'path'
-import { ExecaChildProcess } from 'execa'
+import { type ResultPromise } from 'execa'
 import { Observable } from 'rxjs'
-import observeAsync from './observe-async'
+import observeAsync from './observe-async.js'
 
 export default function observeProcess(
-  process: ExecaChildProcess,
+  process: ResultPromise,
   logName: string,
 ): Observable<string> {
   return observeAsync(async log => {

@@ -1,9 +1,9 @@
 import { map } from 'rxjs/operators'
-import chalk = require('chalk')
+import chalk from 'chalk'
 
-import { executeJar } from '../utils/execute-jar'
-import observeProcess from '../utils/observe-process'
-import Tool from './tool'
+import { executeJar } from '../utils/execute-jar.js'
+import observeProcess from '../utils/observe-process.js'
+import Tool from './tool.js'
 
 interface ApktoolOptions {
   frameworkPath: string
@@ -58,7 +58,7 @@ export default class Apktool extends Tool {
   get version() {
     if (this.options.customPath) return { name: chalk.italic('custom version') }
 
-    const versionNumber = '2.9.3'
+    const versionNumber = '3.0.1'
 
     return {
       name: `v${versionNumber}`,

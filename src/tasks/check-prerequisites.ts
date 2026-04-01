@@ -1,10 +1,10 @@
-import execa = require('execa')
-import Listr = require('listr')
+import { execa } from 'execa'
+import Listr from 'listr'
 
-import { TaskOptions } from '../cli'
-import getJavaVersion from '../utils/get-java-version'
-import UserError from '../utils/user-error'
-import downloadTools from './download-tools'
+import { TaskOptions } from '../cli.js'
+import getJavaVersion from '../utils/get-java-version.js'
+import UserError from '../utils/user-error.js'
+import downloadTools from './download-tools.js'
 
 const MIN_NODE_VERSION = 14
 const MIN_JAVA_VERSION = 8

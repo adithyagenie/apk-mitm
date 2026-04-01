@@ -1,17 +1,18 @@
 import * as path from 'path'
-import * as fs from './utils/fs'
-import parseArgs = require('yargs-parser')
-import chalk = require('chalk')
-import Listr = require('listr')
-import tempy = require('tempy')
+import { createRequire } from 'module'
+import * as fs from './utils/fs.js'
+import parseArgs from 'yargs-parser'
+import chalk from 'chalk'
+import Listr from 'listr'
+import { temporaryDirectory } from 'tempy'
 
-import patchApk, { showAppBundleWarning } from './patch-apk'
-import { patchXapkBundle, patchApksBundle } from './patch-app-bundle'
+import patchApk, { showAppBundleWarning } from './patch-apk.js'
+import { patchXapkBundle, patchApksBundle } from './patch-app-bundle.js'
 
-import Apktool from './tools/apktool'
-import UberApkSigner from './tools/uber-apk-signer'
-import Tool from './tools/tool'
-import UserError from './utils/user-error'
+import Apktool from './tools/apktool.js'
+import UberApkSigner from './tools/uber-apk-signer.js'
+import type Tool from './tools/tool.js'
+import UserError from './utils/user-error.js'
 
 export type TaskOptions = {
   inputPath: string
@@ -36,10 +37,14 @@ interface PatchingError extends Error {
   all?: string
 }
 
+const require = createRequire(import.meta.url)
 const { version } = require('../package.json')
 
 async function main() {
   const args = parseArgs(process.argv.slice(2), {
+    configuration: {
+      'camel-case-expansion': false,
+    },
     string: ['apktool', 'certificate', 'tmp-dir', 'maps-api-key'],
     boolean: ['help', 'skip-patches', 'wait', 'debuggable', 'keep-tmp-dir'],
   })
@@ -54,7 +59,7 @@ async function main() {
     showHelp()
     process.exit(1)
   }
-  const inputPath = path.resolve(input)
+  const inputPath = path.resolve(input.toString())
 
   const { taskFunction, skipDecode, isAppBundle, outputName } =
     await determineTask(inputPath)
@@ -62,9 +67,9 @@ async function main() {
 
   // Initialize and validate certificate path
   let certificatePath: string | undefined
-  const mapsApiKey: string | undefined = args['maps-api-key']
+  const mapsApiKey = args['maps-api-key'] as string | undefined
   if (args.certificate) {
-    certificatePath = path.resolve(args.certificate)
+    certificatePath = path.resolve(args.certificate as string)
     let certificateExtension = path.extname(certificatePath)
 
     if (certificateExtension !== '.pem' && certificateExtension !== '.der')
@@ -72,13 +77,13 @@ async function main() {
   }
 
   let tmpDir = args['tmp-dir']
-    ? path.resolve(args['tmp-dir'])
-    : tempy.directory({ prefix: 'apk-mitm-' })
+    ? path.resolve(args['tmp-dir'] as string)
+    : temporaryDirectory({ prefix: 'apk-mitm-' })
   await fs.mkdir(tmpDir, { recursive: true })
 
   const apktool = new Apktool({
     frameworkPath: path.join(tmpDir, 'framework'),
-    customPath: args.apktool ? path.resolve(args.apktool) : undefined,
+    customPath: args.apktool ? path.resolve(args.apktool as string) : undefined,
   })
   const uberApkSigner = new UberApkSigner()
 
@@ -99,10 +104,10 @@ async function main() {
     tmpDir,
     apktool,
     uberApkSigner,
-    wait: args.wait,
-    skipPatches: args.skipPatches,
+    wait: args.wait as boolean,
+    skipPatches: args['skip-patches'] as boolean,
     isAppBundle,
-    debuggable: args.debuggable,
+    debuggable: args.debuggable as boolean,
     skipDecode,
   })
     .run()
@@ -112,7 +117,7 @@ async function main() {
       }
 
       console.log(
-        chalk`\n  {green.inverse  Done! } Patched file: {bold ./${outputName}}\n`,
+        `\n  ${chalk.green.inverse('  Done! ')} Patched file: ${chalk.bold(`./${outputName}`)}\n`,
       )
 
       if (!args['keep-tmp-dir']) {
@@ -135,7 +140,7 @@ async function main() {
       console.error(
         [
           '',
-          chalk`  {red.inverse.bold  Failed! } An error occurred:`,
+          `${chalk.red.inverse.bold('  Failed! ')} An error occurred:`,
           '',
           message,
           '',
@@ -217,32 +222,32 @@ function formatCommandError(error: string, { tmpDir }: { tmpDir: string }) {
   return (
     error
       // Replace mentions of the (sometimes very long) temporary directory path
-      .replace(new RegExp(tmpDir, 'g'), chalk`{bold <tmp_dir>}`)
+      .replace(new RegExp(tmpDir, 'g'), chalk.bold('<tmp_dir>'))
       // Highlight (usually relevant) warning lines in Apktool output
-      .replace(/^W: .+$/gm, line => chalk`{yellow ${line}}`)
+      .replace(/^W: .+$/gm, line => chalk.yellow(line))
       // De-emphasize Apktool info lines
-      .replace(/^I: .+$/gm, line => chalk`{dim ${line}}`)
+      .replace(/^I: .+$/gm, line => chalk.dim(line))
       // De-emphasize (not very helpful) Apktool "could not exec" error message
       .replace(
         /^.+brut\.common\.BrutException: could not exec.+$/gm,
-        line => chalk`{dim ${line}}`,
+        line => chalk.dim(line),
       )
   )
 }
 
 function showHelp() {
-  console.log(chalk`
-  $ {bold apk-mitm} <path-to-apk/xapk/apks/decoded-directory>
+  console.log(`
+  $ ${chalk.bold('apk-mitm')} <path-to-apk/xapk/apks/decoded-directory>
 
-  {blue {dim.bold *} Optional flags:}
-  {dim {bold --wait} Wait for manual changes before re-encoding}
-  {dim {bold --tmp-dir <path>} Where temporary files will be stored}
-  {dim {bold --keep-tmp-dir} Don't delete the temporary directory after patching}
-  {dim {bold --debuggable} Make the patched app debuggable}
-  {dim {bold --skip-patches} Don't apply any patches (for troubleshooting)}
-  {dim {bold --apktool <path-to-jar>} Use custom version of Apktool}
-  {dim {bold --certificate <path-to-pem/der>} Add specific certificate to network security config}
-  {dim {bold --maps-api-key <api-key>} Add custom Google Maps API key to be replaced while patching apk}
+  ${chalk.blue(chalk.dim.bold('*') + ' Optional flags:')}
+  ${chalk.dim(`${chalk.bold('--wait')} Wait for manual changes before re-encoding`)}
+  ${chalk.dim(`${chalk.bold('--tmp-dir <path>')} Where temporary files will be stored`)}
+  ${chalk.dim(`${chalk.bold('--keep-tmp-dir')} Don't delete the temporary directory after patching`)}
+  ${chalk.dim(`${chalk.bold('--debuggable')} Make the patched app debuggable`)}
+  ${chalk.dim(`${chalk.bold('--skip-patches')} Don't apply any patches (for troubleshooting)`)}
+  ${chalk.dim(`${chalk.bold('--apktool <path-to-jar>')} Use custom version of Apktool`)}
+  ${chalk.dim(`${chalk.bold('--certificate <path-to-pem/der>')} Add specific certificate to network security config`)}
+  ${chalk.dim(`${chalk.bold('--maps-api-key <api-key>')} Add custom Google Maps API key to be replaced while patching apk`)}
   `)
 }
 
@@ -251,11 +256,11 @@ function showHelp() {
  * has an unsupported extension. Exits with status 1 after showing the message.
  */
 function showSupportedExtensions(): never {
-  console.log(chalk`{yellow
-  It looks like you tried running {bold apk-mitm} with an unsupported file type!
+  console.log(chalk.yellow(`
+  It looks like you tried running ${chalk.bold('apk-mitm')} with an unsupported file type!
 
-  Only the following file extensions are supported: {bold .apk}, {bold .xapk}, and {bold .apks} (or {bold .zip})
-  }`)
+  Only the following file extensions are supported: ${chalk.bold('.apk')}, ${chalk.bold('.xapk')}, and ${chalk.bold('.apks')} (or ${chalk.bold('.zip')})
+  `))
 
   process.exit(1)
 }
@@ -265,11 +270,11 @@ function showSupportedExtensions(): never {
  * has an unsupported extension. Exits with status 1 after showing the message.
  */
 function showSupportedCertificateExtensions(): never {
-  console.log(chalk`{yellow
+  console.log(chalk.yellow(`
   It looks like the certificate file you provided is unsupported!
 
-  Only {bold .pem} and {bold .der} certificate files are supported.
-  }`)
+  Only ${chalk.bold('.pem')} and ${chalk.bold('.der')} certificate files are supported.
+  `))
 
   process.exit(1)
 }
@@ -281,22 +286,22 @@ function showVersions({
   apktool: Tool
   uberApkSigner: Tool
 }) {
-  console.log(chalk`
-  {dim ╭} {blue {bold apk-mitm} v${version}}
-  {dim ├ {bold apktool} ${apktool.version.name}
-  ╰ {bold uber-apk-signer} ${uberApkSigner.version.name}}
+  console.log(`
+  ${chalk.dim('╭')} ${chalk.blue(`${chalk.bold('apk-mitm')} v${version}`)}
+  ${chalk.dim(`├ ${chalk.bold('apktool')} ${apktool.version.name}`)}
+  ${chalk.dim(`╰ ${chalk.bold('uber-apk-signer')} ${uberApkSigner.version.name}`)}
   `)
 }
 
 export function showArmWarning() {
-  console.log(chalk`{yellow
-  {inverse.bold  NOTE }
+  console.log(chalk.yellow(`
+  ${chalk.inverse.bold('  NOTE ')}
 
-  {bold apk-mitm} doesn't officially support ARM-based devices (like Raspberry Pi's)
+  ${chalk.bold('apk-mitm')} doesn't officially support ARM-based devices (like Raspberry Pi's)
   at the moment, so the error above might be a result of that. Please try
   patching this APK on a device with a more common CPU architecture like x64
   before reporting an issue.
-  }`)
+  `))
 }
 
 main()

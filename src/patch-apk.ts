@@ -1,13 +1,13 @@
 import * as path from 'path'
 import { once } from 'events'
-import * as fs from './utils/fs'
-import Listr = require('listr')
-import chalk = require('chalk')
+import * as fs from './utils/fs.js'
+import Listr from 'listr'
+import chalk from 'chalk'
 
-import { TaskOptions } from './cli'
-import observeAsync from './utils/observe-async'
-import applyPatches from './tasks/apply-patches'
-import checkPrerequisites from './tasks/check-prerequisites'
+import type { TaskOptions } from './cli.js'
+import observeAsync from './utils/observe-async.js'
+import applyPatches from './tasks/apply-patches.js'
+import checkPrerequisites from './tasks/check-prerequisites.js'
 
 export default function patchApk(options: TaskOptions) {
   const { apktool, uberApkSigner } = options
@@ -73,7 +73,7 @@ export default function patchApk(options: TaskOptions) {
               }),
           },
           {
-            title: chalk`Encoding using AAPT {dim [fallback]}`,
+            title: `Encoding using AAPT ${chalk.dim('[fallback]')}`,
             skip: () => !fallBackToAapt,
             task: () => apktool.encode(decodeDir, tmpApkPath, false),
           },
@@ -94,18 +94,18 @@ export default function patchApk(options: TaskOptions) {
 }
 
 export function showAppBundleWarning() {
-  console.log(chalk`{yellow
-  {inverse.bold  WARNING }
+  console.log(chalk.yellow(`
+  ${chalk.inverse.bold('  WARNING ')}
 
-  This app seems to be using {bold Android App Bundle} which means that you
+  This app seems to be using ${chalk.bold('Android App Bundle')} which means that you
   will likely run into problems installing it. That's because this app
-  is made out of {bold multiple APK files} and you've only got one of them.
+  is made out of ${chalk.bold('multiple APK files')} and you've only got one of them.
 
-  If you want to patch an app like this with {bold apk-mitm}, you'll have to
+  If you want to patch an app like this with ${chalk.bold('apk-mitm')}, you'll have to
   supply it with all the APKs. You have two options for doing this:
 
-  – download a {bold *.xapk} file {dim (for example from https://apkpure.com​)}
-  – export a {bold *.apks} file {dim (using https://github.com/Aefyr/SAI​)}
+  – download a ${chalk.bold('*.xapk')} file ${chalk.dim('(for example from https://apkpure.com​)')}
+  – export a ${chalk.bold('*.apks')} file ${chalk.dim('(using https://github.com/Aefyr/SAI​)')}
 
-  You can then run {bold apk-mitm} again with that file to patch the bundle.}`)
+  You can then run ${chalk.bold('apk-mitm')} again with that file to patch the bundle.`))
 }

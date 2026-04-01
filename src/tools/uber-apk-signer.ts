@@ -1,6 +1,6 @@
-import { executeJar } from '../utils/execute-jar'
-import observeProcess from '../utils/observe-process'
-import Tool from './tool'
+import { executeJar } from '../utils/execute-jar.js'
+import observeProcess from '../utils/observe-process.js'
+import Tool from './tool.js'
 
 export default class UberApkSigner extends Tool {
   sign(inputPaths: string[], { zipalign = false } = {}) {

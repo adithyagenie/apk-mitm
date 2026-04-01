@@ -1,15 +1,15 @@
 import { unzip, zip } from '@tybys/cross-zip'
-import * as fs from './utils/fs'
+import * as fs from './utils/fs.js'
 import * as path from 'path'
 import * as os from 'os'
-import globby = require('globby')
-import Listr = require('listr')
-import execa = require('execa')
+import { globby } from 'globby'
+import Listr from 'listr'
+import { execa } from 'execa'
 
-import patchApk from './patch-apk'
-import { TaskOptions } from './cli'
-import observeAsync from './utils/observe-async'
-import buildGlob from './utils/build-glob'
+import patchApk from './patch-apk.js'
+import type { TaskOptions } from './cli.js'
+import observeAsync from './utils/observe-async.js'
+import buildGlob from './utils/build-glob.js'
 
 export function patchXapkBundle(options: TaskOptions) {
   return patchAppBundle(options, { isXapk: true })

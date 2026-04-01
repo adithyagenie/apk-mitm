@@ -1,11 +1,11 @@
 import * as os from 'os'
-import * as fs from '../../utils/fs'
-import chalk = require('chalk')
-import escapeStringRegexp = require('escape-string-regexp')
+import * as fs from '../../utils/fs.js'
+import chalk from 'chalk'
+import escapeStringRegexp from 'escape-string-regexp'
 
-import parseSmaliHead, { SmaliHead } from './parse-head'
-import smaliPatches from './patches'
-import { SmaliPatch } from './types'
+import parseSmaliHead, { SmaliHead } from './parse-head.js'
+import smaliPatches from './patches.js'
+import { SmaliPatch } from './types.js'
 
 /**
  * Process the given Smali file and apply applicable patches.
@@ -52,7 +52,7 @@ export default async function processSmaliFile(
         ]
 
         log(
-          chalk`{bold ${smaliHead.name}}{dim :} Applied {bold ${method.name}} patch`,
+          `${chalk.bold(smaliHead.name)}${chalk.dim(':')} Applied ${chalk.bold(method.name)} patch`,
         )
 
         return [

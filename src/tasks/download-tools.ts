@@ -1,7 +1,7 @@
-import Listr = require('listr')
+import Listr from 'listr'
 
-import createToolDownloadTask from '../utils/download-tool'
-import { TaskOptions } from '../cli'
+import createToolDownloadTask from '../utils/download-tool.js'
+import { TaskOptions } from '../cli.js'
 
 export default function downloadTools({ apktool, uberApkSigner }: TaskOptions) {
   return new Listr(

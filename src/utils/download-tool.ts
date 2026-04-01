@@ -1,11 +1,11 @@
-import * as fs from './fs'
+import * as fs from './fs.js'
 import * as pathUtils from 'path'
-import envPaths = require('env-paths')
+import envPaths from 'env-paths'
 import { ListrTask, ListrTaskWrapper } from 'listr'
 
-import Tool from '../tools/tool'
-import observeAsync from './observe-async'
-import downloadFile from './download-file'
+import Tool from '../tools/tool.js'
+import observeAsync from './observe-async.js'
+import downloadFile from './download-file.js'
 
 const cachePath = envPaths('apk-mitm', { suffix: '' }).cache
 

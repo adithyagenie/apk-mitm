@@ -1,4 +1,4 @@
-import { SmaliPatch } from './types'
+import { SmaliPatch } from './types.js'
 
 /** `return void;` in Smali. */
 const RETURN_VOID_SMALI = ['.locals 0', 'return-void']

@@ -1,4 +1,4 @@
-import { getCachedPath } from '../utils/download-tool'
+import { getCachedPath } from '../utils/download-tool.js'
 
 export default abstract class Tool {
   abstract name: string

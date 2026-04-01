@@ -1,4 +1,4 @@
-import * as fs from '../utils/fs'
+import * as fs from '../utils/fs.js'
 import * as path from 'path'
 
 /**
