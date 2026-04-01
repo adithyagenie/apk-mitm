@@ -17,8 +17,6 @@ export default function patchApk(options: TaskOptions) {
     : path.join(options.tmpDir, 'decode')
   const tmpApkPath = path.join(options.tmpDir, 'tmp.apk')
 
-  let fallBackToAapt = false
-
   return new Listr([
     {
       title: 'Checking prerequisities',
@@ -56,28 +54,7 @@ export default function patchApk(options: TaskOptions) {
     },
     {
       title: 'Encoding patched APK file',
-      task: () =>
-        new Listr([
-          {
-            title: 'Encoding using AAPT2',
-            task: (_, task) =>
-              observeAsync(async next => {
-                try {
-                  await apktool
-                    .encode(decodeDir, tmpApkPath, true)
-                    .forEach(next)
-                } catch {
-                  task.skip('Failed, falling back to AAPT...')
-                  fallBackToAapt = true
-                }
-              }),
-          },
-          {
-            title: `Encoding using AAPT ${chalk.dim('[fallback]')}`,
-            skip: () => !fallBackToAapt,
-            task: () => apktool.encode(decodeDir, tmpApkPath, false),
-          },
-        ]),
+      task: () => apktool.encode(decodeDir, tmpApkPath),
     },
     {
       title: 'Signing patched APK file',

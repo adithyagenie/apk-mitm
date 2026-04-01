@@ -29,7 +29,7 @@ export default class Apktool extends Tool {
     )
   }
 
-  encode(inputPath: string, outputPath: string, useAapt2: boolean) {
+  encode(inputPath: string, outputPath: string) {
     return this.run(
       [
         'build',
@@ -38,9 +38,8 @@ export default class Apktool extends Tool {
         outputPath,
         '--frame-path',
         this.options.frameworkPath,
-        ...(useAapt2 ? ['--use-aapt2'] : []),
       ],
-      `encoding-${useAapt2 ? 'aapt2' : 'aapt'}`,
+      'encoding',
     )
   }
 
